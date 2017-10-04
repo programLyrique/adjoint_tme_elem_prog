@@ -147,7 +147,7 @@ print(nb_sub_students, "étudiants ont soumis. ", nb_students, "auraient dû sou
 
 # Enregistrer les fichiers
 for filename,text in submissions.items():
-    with open(os.path.join(args.destination, filename), "w") as output:
+    with open(os.path.join(args.destination, filename +".py"), "w") as output:
         # On utilise des commentaires python pour l'en-tête de 6 lignes
         i = 0
         lines = text.split("\n", 6)
@@ -158,18 +158,18 @@ for filename,text in submissions.items():
 # Tester la syntaxe
 if args.syntax:
     print("Test de la syntaxe des soumissions")
-    compiled = dict()# To get a better display of passing and not passing submissions
+    errors = dict()# To get a better display of passing and not passing submissions
     print("=== Erreurs ===")
     for filename in submissions.keys():
-        cfile = py_compile.compile(os.path.join(args.destination, filename))
-        compiled[filename] = cfile == None
+        cfile = py_compile.compile(os.path.join(args.destination, filename + ".py"))
+        errors[filename] = cfile == None # Error: no cfile generated, so must have been a syntax error
     print("=== Résumé ===")
-    for filename, passed in compiled.items():
-        print(filename, ": ", passed)
+    for filename, error in errors.items():
+        print(filename, ": ", "ERROR" if error else "good")
 
     # Python considère que True est 1 et False est 0
-    print(sum(compiled.values()), "soumissions comportent des erreurs de syntaxe : ")
-    for filename, v in filter(lambda pair : not pair[1], compiled.items()):
+    print(sum(errors.values()), "soumissions comportent des erreurs de syntaxe : ")
+    for filename, v in filter(lambda pair : pair[1], errors.items()):
         print(filename, end=' ')
 
 
