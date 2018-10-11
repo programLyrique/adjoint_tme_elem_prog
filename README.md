@@ -27,7 +27,7 @@ Arguments optionnels :
 
 Tous les composants sont optionnels, mais la valeur par défaut ne sera pas toujours raisonnable.
 
-- duree : nombre de jours après la date du TME pendant lesquels les étudiants peuvent encoer soumettre
+- duree : nombre de jours après la date du TME pendant lesquels les étudiants peuvent encore soumettre
 - annee : année de l'UE
 - groupe : groupe. Ex: MIPI11.1
 - nb_etudiants : nombre d'étudiants attendus

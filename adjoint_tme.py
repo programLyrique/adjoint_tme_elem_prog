@@ -13,6 +13,10 @@ import py_compile
 import os.path
 import string
 
+#Pour enlever les accents (Déc et Dec!!)
+dictAccents = {'é' : 'e'}
+tableAccents = str.maketrans(dictAccents)
+
 # As we don't check the SSL certificate
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
@@ -46,7 +50,10 @@ args = parser.parse_args()
 
 try:
     locale.setlocale(locale.LC_ALL, 'fr_FR')# Nécessaire pour générer les bonnes dates (qui sont en français). N'est pas threadsafe bien sûr...
-    tmeDate = datetime.datetime.strptime(args.dateTME, "%Y%b%d")
+
+    #Des problèmes avec les locales qui veulent des accents
+    tempDateTme = args.dateTME.replace("Dec", "Déc")
+    tmeDate = datetime.datetime.strptime(tempDateTme, "%Y%b%d")
     locale.resetlocale()
 except ValueError:
     print("Erreur du format de la date")
@@ -111,7 +118,7 @@ currentDate = deadline
 while( currentDate >= tmeDate):
     # In French, months do no start by capital letters, but the submission website uses capital letters
     formattedCurrentDate = string.capwords(currentDate.strftime("%Y %b %d")).replace(" ", "")
-    url =  tme_url + quote_plus(formattedCurrentDate)
+    url =  tme_url + quote_plus(formattedCurrentDate.translate(tableAccents))
 
     #Interrogate url of the current day
     response = requests.get(url, auth=auth, verify=False)
@@ -149,11 +156,12 @@ print(nb_sub_students, "étudiants ont soumis. ", nb_students, "auraient dû sou
 for filename,text in submissions.items():
     with open(os.path.join(args.destination, filename +".py"), "w") as output:
         # On utilise des commentaires python pour l'en-tête de 6 lignes
-        i = 0
-        lines = text.split("\n", 6)
-        for line in lines[:6]:
-            output.write("# " + line + "\n")
-        output.write(lines[6])
+        # UPDATE : plus besoin depuis changement desfichiers mis en ligne, qui sont directement du python
+        # lines = text.split("\n", 6)
+        # for line in lines[:6]:
+        #     output.write("# " + line + "\n")
+        # output.write(lines[6])
+        output.write(text)
 
 # Tester la syntaxe
 if args.syntax:
